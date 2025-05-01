@@ -1,0 +1,32 @@
+#! /bin/sh
+
+PATH=/sbin:/usr/sbin:/bin:/usr/bin
+
+do_start() {
+	local modules_load_dirs='/etc/modules-load.d'
+
+	for dir in ${modules_load_dirs}; do
+		if [ -d ${dir} ]; then
+			local conf_files=`ls ${dir}/*.conf`
+			for file in ${conf_files}; do
+				local module_name=`cat ${file}`
+				modprobe ${module_name}
+			done
+		fi
+	done
+}
+
+case "$1" in
+	start)
+	do_start
+		;;
+	stop|restart|reload|force-reload)
+		echo "Error: argument '$1' not supported" >&2
+		exit 3
+		;;
+	*)
+		echo "Usage: $0 start|stop" >&2
+		exit 3
+		;;
+esac
+

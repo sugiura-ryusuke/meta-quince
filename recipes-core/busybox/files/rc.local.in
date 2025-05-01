@@ -1,0 +1,92 @@
+#! /bin/sh
+
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+do_start() {
+	MTDBLOCK_LIST=`cat /proc/cmdline | sed 's/ /\n/g' | grep "^mtdblock" | sort`
+
+	for m in ${MTDBLOCK_LIST}; do
+		PARAM=`echo "${m}" | cut -d= -f2`
+		DEVICE=`echo "${m}" | cut -d= -f1`
+		DIR=`echo "${m}" | cut -d= -f2 | cut -d, -f1`
+
+		printf "Create phram device ${DEVICE}.\n"
+		logger -p user.info "Create phram device ${DEVICE}."
+		echo "${PARAM}" > /sys/module/phram/parameters/phram
+
+		for k in `seq 1 10`; do
+			if [ -e /dev/mtdblock1 ]; then
+				break;
+			fi
+			if [ ${k} -eq 10 ]; then
+				printf "Cannot create phram device ${DEVICE}.\n"
+				logger -p user.mount "Cannot create phram device ${DEVICE}."
+			fi
+			usleep 200000
+		done
+
+		printf "Mount /dev/${DEVICE} at ${DIR}.\n"
+		logger -p user.info "Mount /dev/${DEVICE} at ${DIR}."
+		mount /dev/${DEVICE} ${DIR}
+
+		for k in `seq 1 50`; do
+			mountpoint -q ${DIR}
+			if [ $? -eq 0 ]; then
+				printf "/dev/${DEVICE} is mounted.\n"
+				logger -p user.info "/dev/${DEVICE} is mounted."
+				break;
+			fi
+			if [ ${k} -eq 1 ]; then
+				printf "Waiting for mount /dev/${DEVICE}...\n"
+				logger -p user.info "Waiting for mount /dev/${DEVICE}..."
+			fi
+			if [ ${k} -eq 50 ]; then
+				printf "Cannot mount /dev/${DEVICE}.\n"
+				logger -p user.error "Cannot mount /dev/${DEVICE}."
+			fi
+			usleep 200000
+		done
+	done
+
+	if [ -x /opt/@@DISTRO@@/etc/rc.local ]; then
+		printf "Execute local script. (/opt/@@DISTRO@@/etc/rc.local start)\n"
+		logger -p user.info "Execute local script. (/opt/@@DISTRO@@/etc/rc.local start)"
+		/opt/@@DISTRO@@/etc/rc.local start
+		ES=$?
+		return ${ES}
+	else
+		printf "Skipped local script execution. (/opt/@@DISTRO@@/etc/rc.local start)\n"
+		logger -p user.info "Skipped local script execution. (/opt/@@DISTRO@@/etc/rc.local start)"
+	fi
+}
+
+do_stop() {
+	if [ -x /opt/@@DISTRO@@/etc/rc.local ]; then
+		printf "Execute local script. (/opt/@@DISTRO@@/etc/rc.local stop)\n"
+		logger -p user.info "Execute local script. (/opt/@@DISTRO@@/etc/rc.local stop)"
+		/opt/@@DISTRO@@/etc/rc.local stop
+		ES=$?
+		return ${ES}
+	else
+		printf "Skipped local script execution. (/opt/@@DISTRO@@/etc/rc.local stop)\n"
+		logger -p user.info "Skipped local script execution. (/opt/@@DISTRO@@/etc/rc.local stop)"
+	fi
+}
+
+case "$1" in
+	start)
+		do_start
+		;;
+	stop)
+		do_stop
+		;;
+	restart|reload|force-reload)
+		echo "Error: argument '$1' not supported" >&2
+		exit 3
+		;;
+	*)
+		echo "Usage: $0 start|stop" >&2
+		exit 3
+		;;
+esac
+
