@@ -48,15 +48,15 @@ do_start() {
 		done
 	done
 
-	if [ -x /opt/@@DISTRO@@/etc/rc.local ]; then
-		printf "Execute local script. (/opt/@@DISTRO@@/etc/rc.local start)\n"
-		logger -p user.info "Execute local script. (/opt/@@DISTRO@@/etc/rc.local start)"
-		/opt/@@DISTRO@@/etc/rc.local start
+	if [ -x /opt/@@QUINCE_OPT_PACKAGE_NAME@@/etc/rc.local ]; then
+		printf "Execute local script. (/opt/@@QUINCE_OPT_PACKAGE_NAME@@/etc/rc.local start)\n"
+		logger -p user.info "Execute local script. (/opt/@@QUINCE_OPT_PACKAGE_NAME@@/etc/rc.local start)"
+		/opt/@@QUINCE_OPT_PACKAGE_NAME@@/etc/rc.local start
 		ES=$?
 		return ${ES}
 	else
-		printf "Skipped local script execution. (/opt/@@DISTRO@@/etc/rc.local start)\n"
-		logger -p user.info "Skipped local script execution. (/opt/@@DISTRO@@/etc/rc.local start)"
+		printf "Skipped local script execution. (/opt/@@QUINCE_OPT_PACKAGE_NAME@@/etc/rc.local start)\n"
+		logger -p user.info "Skipped local script execution. (/opt/@@QUINCE_OPT_PACKAGE_NAME@@/etc/rc.local start)"
 	fi
 }
 

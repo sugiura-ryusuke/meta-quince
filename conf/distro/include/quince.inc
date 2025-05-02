@@ -35,10 +35,10 @@ SDKPATHINSTALL = "${HOME}/${SDK_NAME}"
 
 
 # Enable creation of SPDX manifests by default
-#INHERIT += "create-spdx"
+INHERIT += "create-spdx"
 
 # Make the SPDX output more human-readable, using identation and newlines
-#SPDX_PRETTY = "1"
+SPDX_PRETTY = "1"
 
 # Add a description of the source files used to build the host tools and the target packages, to the spdx.json files
 #SPDX_INCLUDE_SOURCES = "1"

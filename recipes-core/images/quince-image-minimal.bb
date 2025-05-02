@@ -54,6 +54,7 @@ def kernel_module_packages(d):
 
 KERNEL_MODULE_PKGS = "${@kernel_module_packages(d)}"
 #KERNEL_MODULE_PKGS = "kernel-modules"
+#KERNEL_MODULE_PKGS = " "
 
 # Specify the packages to install into an image through the image class
 IMAGE_INSTALL = " \
@@ -79,4 +80,7 @@ IMAGE_ROOTFS_EXTRA_SPACE = "0"
 
 # Specifies the list of locales to install into the image during the root filesystem construction process
 IMAGE_LINGUAS = " "
+
+
+include quince-image-deploy.inc
 

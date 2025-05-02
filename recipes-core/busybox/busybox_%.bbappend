@@ -9,7 +9,7 @@ SRC_URI:append = " \
 "
 
 do_compile:append() {
-	sed -e "s/@@DISTRO@@/${DISTRO}/" \
+	sed -e "s/@@QUINCE_OPT_PACKAGE_NAME@@/${QUINCE_OPT_PACKAGE_NAME}/" \
         "${WORKDIR}/rc.local.in" > "${WORKDIR}/rc.local"
 }
 
