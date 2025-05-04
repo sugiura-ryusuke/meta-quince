@@ -1,0 +1,55 @@
+$MODALIAS=.* root:root 660 @modprobe "$MODALIAS"
+
+console root:root 0600 
+cpu_dma_latency root:root 0660 
+fb[0-9].* root:root 0660 
+full root:root 0666 
+initctl root:root 0600 
+ircomm[0-9].* root:dialout 0660 
+kmem root:kmem 0640 
+kmsg root:root 0660 
+log root:root 0666 
+loop[0-9].* root:disk 0640 
+mem root:kmem 0640 
+network_latency root:root 0660 
+network_throughput root:root 0660 
+null root:root 0666 
+port root:kmem 0640 
+ptmx root:tty 0666 
+ram[0-9].* root:disk 0640 
+random root:root 0666 
+[hs]d[a-z] root:disk 0640 
+tty root:tty 0666 
+tty.* root:root 0620 
+urandom root:root 0666 
+usbdev.* root:root 0660 
+vcs.* root:tty 0660 
+zero root:root 0666 
+
+snd/pcm.* root:root 0660 
+snd/control.* root:root 0660 
+snd/timer root:root 0660 
+snd/seq root:root 0660 
+snd/mini.* root:root 0660 
+
+input/event.* root:root 0660 @/etc/mdev/find-touchscreen.sh
+input/mice root:root 0660 
+input/mouse.* root:root 0660 
+
+tun[0-9]* root:root 0660 =net/
+
+rtc.* root:root 0660 
+watchdog.* root:root 0660 
+
+gpiochip[0-9]* root:wheel 0660 
+i2c-[0-9]* root:wheel 0660 
+serial[0-9]* root:wheel 0660 
+spidev[0-9]*.[0-9]* root:wheel 0660 
+ttyAMA[0-9]* root:wheel 0660 
+ttyS[0-9]* root:wheel 0660 
+
+[hs]d[a-z][0-9]? root:disk 0660 @@QUINCE_DISABLE_AUTOMOUNT_STORAGE@@
+mmcblk[0-9]rpmb root:disk 0660 
+mmcblk[0-9]boot[0-9] root:disk 0660 
+mmcblk[0-9].* root:disk 0660 @@QUINCE_DISABLE_AUTOMOUNT_STORAGE@@
+

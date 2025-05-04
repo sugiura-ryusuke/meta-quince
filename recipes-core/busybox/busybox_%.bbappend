@@ -1,7 +1,9 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 SRC_URI:append = " \
-    file://defconfig \
+    file://enable_mdev.cfg \
+    file://enable_ntpd.cfg \
+    file://mdev.conf.in \
     file://modules \
     file://ntpd.sh \
     file://rc.local.in \
@@ -9,6 +11,15 @@ SRC_URI:append = " \
 "
 
 do_compile:append() {
+	if ${@bb.utils.contains('QUINCE_DISABLE_AUTOMOUNT_STORAGE', '0', 'true', 'false', d)}; then
+		AUTOMOUNT_STORAGE="*/etc/mdev/mdev-mount.sh"
+	else
+		AUTOMOUNT_STORAGE=""
+	fi
+
+	sed -e "s|@@QUINCE_DISABLE_AUTOMOUNT_STORAGE@@|${AUTOMOUNT_STORAGE}|g" \
+        "${WORKDIR}/mdev.conf.in" > "${WORKDIR}/mdev.conf"
+
 	sed -e "s/@@QUINCE_OPT_PACKAGE_NAME@@/${QUINCE_OPT_PACKAGE_NAME}/" \
         "${WORKDIR}/rc.local.in" > "${WORKDIR}/rc.local"
 }
