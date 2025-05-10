@@ -34,6 +34,9 @@ DEVTOOLS_PKGS = " \
     i2c-tools \
     jq \
     libstdc++ \
+    ltrace \
+    memstat \
+    strace \
 "
 
 EXTENDED_PKGS = " \
@@ -64,6 +67,7 @@ SUPPORT_PKGS = " \
     libgpiod \
     libgpiod-tools \
     libusb1 \
+    netcat \
     tcpdump \
 "
 

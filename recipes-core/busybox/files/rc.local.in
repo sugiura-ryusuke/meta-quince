@@ -4,45 +4,48 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
 do_start() {
 	MTDBLOCK_LIST=`cat /proc/cmdline | sed 's/ /\n/g' | grep "^mtdblock" | sort`
+	MTDBLOCK_LIST_NUM=`cat /proc/cmdline | sed 's/ /\n/g' | grep "^mtdblock" | wc -l`
+	MTDBLOCK_DEV_NUM=`find /dev/mtdblock* 2>/dev/null | wc -l`
 
-	for m in ${MTDBLOCK_LIST}; do
-		PARAM=`echo "${m}" | cut -d= -f2`
-		DEVICE=`echo "${m}" | cut -d= -f1`
-		DIR=`echo "${m}" | cut -d= -f2 | cut -d, -f1`
+	for i in `seq 1 ${MTDBLOCK_LIST_NUM}`; do
+		PARAM=`echo ${MTDBLOCK_LIST} | sed -n ${i}p | cut -d= -f2`
+		DIR=`echo ${MTDBLOCK_LIST} | sed -n ${i}p | cut -d= -f2 | cut -d, -f1`
 
-		printf "Create phram device ${DEVICE}.\n"
-		logger -p user.info "Create phram device ${DEVICE}."
+		DEVICE="/dev/mtdblock$(( ${MTDBLOCK_DEV_NUM} + ${i} - 1 ))"
+
+		printf "Create phram ${DEVICE}.\n"
+		logger -p user.info "Create phram ${DEVICE}."
 		echo "${PARAM}" > /sys/module/phram/parameters/phram
 
 		for k in `seq 1 10`; do
-			if [ -e /dev/mtdblock1 ]; then
+			if [ -e ${DEVICE} ]; then
 				break;
 			fi
 			if [ ${k} -eq 10 ]; then
-				printf "Cannot create phram device ${DEVICE}.\n"
-				logger -p user.mount "Cannot create phram device ${DEVICE}."
+				printf "Cannot create phram ${DEVICE}.\n"
+				logger -p user.mount "Cannot create phram ${DEVICE}."
 			fi
 			usleep 200000
 		done
 
-		printf "Mount /dev/${DEVICE} at ${DIR}.\n"
-		logger -p user.info "Mount /dev/${DEVICE} at ${DIR}."
-		mount /dev/${DEVICE} ${DIR}
+		printf "Mount ${DEVICE} at ${DIR}.\n"
+		logger -p user.info "Mount ${DEVICE} at ${DIR}."
+		mount ${DEVICE} ${DIR}
 
 		for k in `seq 1 50`; do
 			mountpoint -q ${DIR}
 			if [ $? -eq 0 ]; then
-				printf "/dev/${DEVICE} is mounted.\n"
-				logger -p user.info "/dev/${DEVICE} is mounted."
+				printf "${DEVICE} is mounted.\n"
+				logger -p user.info "${DEVICE} is mounted."
 				break;
 			fi
 			if [ ${k} -eq 1 ]; then
-				printf "Waiting for mount /dev/${DEVICE}...\n"
-				logger -p user.info "Waiting for mount /dev/${DEVICE}..."
+				printf "Waiting for mount ${DEVICE}...\n"
+				logger -p user.info "Waiting for mount ${DEVICE}..."
 			fi
 			if [ ${k} -eq 50 ]; then
-				printf "Cannot mount /dev/${DEVICE}.\n"
-				logger -p user.error "Cannot mount /dev/${DEVICE}."
+				printf "Cannot mount ${DEVICE}.\n"
+				logger -p user.error "Cannot mount ${DEVICE}."
 			fi
 			usleep 200000
 		done

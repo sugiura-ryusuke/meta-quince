@@ -13,8 +13,6 @@ INIT_PKGS = " \
 "
 
 BSP_PKGS = " \
-    i2cdev \
-    usbutils \
 "
 
 CONNECTIVITY_PKGS = " \
@@ -25,7 +23,6 @@ CORE_PKGS = " \
 "
 
 DEVTOOLS_PKGS = " \
-    i2c-tools \
 "
 
 EXTENDED_PKGS = " \
@@ -40,8 +37,6 @@ KERNEL_PKGS = " \
 "
 
 SUPPORT_PKGS = " \
-    libgpiod \
-    libgpiod-tools \
 "
 
 def kernel_module_packages(d):
